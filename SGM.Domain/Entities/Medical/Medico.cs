@@ -1,4 +1,6 @@
-﻿namespace SGM.Domain.Entities.Medical
+﻿using SGM.Domain.Entities.Security;
+
+namespace SGM.Domain.Entities.Medical
 {
     public class Medico : Usuario
     {
