@@ -1,0 +1,6 @@
+@SGM.Web_HostAddress = http://localhost:5069
+
+GET {{SGM.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
