@@ -1,12 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SGM.Domain.Base;
 
 namespace SGM.Domain.Entities.Security
 {
-    internal class Rol
+    public class Rol : AuditEntity
     {
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public ICollection<UsuarioRol> UsuarioRoles { get; set; }
+        public Rol()
+        {
+            UsuarioRoles = new List<UsuarioRol>();
+        }
+        public int ObtenerCantidadUsuarios()
+        {
+            return UsuarioRoles.Count;
+        }
+        public bool EsRolAdministrador()
+        {
+            return Nombre.Equals("Administrador", StringComparison.OrdinalIgnoreCase);
+        }
+        public bool EsRolMedico()
+        {
+            return Nombre.Equals("Medico", StringComparison.OrdinalIgnoreCase);
+        }
+        public bool EsRolRecepcionista()
+        {
+            return Nombre.Equals("Recepcionista", StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

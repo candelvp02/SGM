@@ -5,21 +5,39 @@ namespace SGM.Domain.Entities.Medical
 {
     public class Recordatorio : AuditEntity
     {
-        public Guid Id { get; set; }
-        public Cita Id { get; set; }
+        public int CitaId { get; set; }
         public Cita Cita { get; set; }
-        public DateTime FechaEnvio { get; set; }
-        public TimeSpan HoraEnvio { get; set; }
-        public TipoNotificacion Tipo { get; set; }
-        public string Mensaje { get; set; }
-        public bool Enviado { get; set; }
-        public DateTime? FechaEnvioReal { get; set; }
-        public bool Visto { get; set; }
 
-        public TimeSpan TiempoAntelacion
+        public DateTime FechaEnvio { get; set; }
+        public TipoNotificacion TipoNotificacion { get; set; }
+        public string Mensaje { get; set; }
+        public bool FueEnviado { get; set; }
+        public Recordatorio()
         {
-            get => Cita.Fecha - FechaEnvio;
-            set => FechaEnvio = Cita.Fecha - value;
+            FueEnviado = false;
+        }
+        public string ObtenerTipoNotificacionNombre()
+        {
+            return TipoNotificacion switch
+            {
+                TipoNotificacion.Email => "Email",
+                TipoNotificacion.SMS => "Mensaje de Texto",
+                TipoNotificacion.PushNotification => "Push Notification",
+                _ => "No especificado"
+            };
+        }
+        public bool DebeSerEnviado()
+        {
+            return !FueEnviado && FechaEnvio <= DateTime.Now;
+        }
+        public void MarcarComoEnviado()
+        {
+            FueEnviado = true;
+            FechaModificacion = DateTime.Now;
+        }
+        public TimeSpan TiempoHastaEnvio()
+        {
+            return FechaEnvio - DateTime.Now;
         }
     }
 }

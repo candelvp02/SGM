@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SGM.Domain.Entities.Configuration
+﻿namespace SGM.Domain.Entities.Configuration
 {
-    internal class TipoNotificacion
+    public enum TipoNotificacion
     {
+        Email = 1,
+        SMS = 2,
+        PushNotification = 3
     }
 }

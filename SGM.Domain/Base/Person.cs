@@ -1,17 +1,22 @@
 ﻿namespace SGM.Domain.Base
 {
-    public abstract class Person
+    public abstract class Person : AuditEntity
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? FullName => $"{FirstName} {LastName}";
-        public string? Email { get; set; }
-        public string? PhoneNumber { get; set; }
-        public string? Address { get; set; }
-        public string? IdentificationNumber { get; set; }
-        public string? Gender { get; set; }
-        public DateTime? DateOfBirth { get; set; }
-
-
+        public required string Nombre { get; set; }
+        public required string Apellido { get; set; }
+        public string NombreCompleto => $"{Nombre} {Apellido}";
+        public required string Cedula { get; set; }
+        public DateTime FechaNacimiento { get; set; }
+        public int Edad
+        {
+            get
+            {
+                var hoy = DateTime.Today;
+                var edad = hoy.Year - FechaNacimiento.Year;
+                if (FechaNacimiento.Date > hoy.AddYears(-edad)) edad--;
+                return edad;
+            }
+        }
+        public required string Sexo { get; set; }
     }
 }

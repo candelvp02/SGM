@@ -1,12 +1,72 @@
-﻿using SGM.Domain.Entities.Security;
+﻿using SGM.Domain.Base;
+using SGM.Domain.Entities.Configuration;
 
 namespace SGM.Domain.Entities.Medical
 {
-    public class Medico : Usuario
+    public class Medico : Person
     {
-        public string Especialidad { get; set; }
-        public string NumeroColegiado { get; set; }
-        public ICollection<Disponibilidad> Disponibilidades { get; set; }
+        public string NumeroLicencia { get; set; }
+        public Especialidad Especialidad { get; set; }
+        public string Telefono { get; set; }
+        public string Email { get; set; }
         public ICollection<Cita> Citas { get; set; }
+        public ICollection<Disponibilidad> Disponibilidades { get; set; }
+        public Medico()
+        {
+            Citas = new List<Cita>();
+            Disponibilidades = new List<Disponibilidad>();
+        }
+        public string ObtenerEspecialidadNombre()
+        {
+            return Especialidad switch
+            {
+                Especialidad.Alergologia => "Alergologia",
+                Especialidad.Anestesiologia => "Anestesiologia",
+                Especialidad.Cardiologia => "Cardiologia",
+                Especialidad.CirugiaGeneral => "Cirugia General",
+                Especialidad.Dermatologia => "Dermatologia",
+                Especialidad.Endocrinologia => "Endocrinologia",
+                Especialidad.FisiatriaYRehabilitacion => "Fisiatria y Rehabilitacion",
+                Especialidad.Gastroenterologia => "Gastroenterologia",
+                Especialidad.Geriatria => "Geriatria",
+                Especialidad.GinecologiaYObstetricia => "Ginecologia y Obstetricia",
+                Especialidad.Hematologia => "Hematologia",
+                Especialidad.Infectologia => "Infectologia",
+                Especialidad.MedicinaGeneral => "Medicina General",
+                Especialidad.Nefrologia => "Nefrologia",
+                Especialidad.Neumologia => "Neumologia",
+                Especialidad.Neurocirugia => "Neurocirugia",
+                Especialidad.Neurologia => "Neurologia",
+                Especialidad.Nutricion => "Nutricion",
+                Especialidad.Oftalmologia => "Oftalmologia",
+                Especialidad.Oncologia => "Oncologia",
+                Especialidad.Ortopedia => "Ortopedia",
+                Especialidad.Otorrinolaringologia => "Otorrinolaringologia",
+                Especialidad.Pediatria => "Pediatria",
+                Especialidad.Psiquiatria => "Psiquiatria",
+                Especialidad.Reumatologia => "Reumatologia",
+                Especialidad.Traumatologia => "Traumatologia",
+                Especialidad.Urologia => "Urologia",
+                _ => "No Especificada"
+            };
+        }
+        public int ObtenerCantidadCitasPendientes()
+        {
+            return Citas.Count(c => c.Estado == EstadoCita.Programada || c.Estado == EstadoCita.Confirmada);
+        }
+        public bool TieneDisponibilidadActiva()
+        {
+            return Disponibilidades.Any(d => d.EsActivo);
+        }
+        public List<Disponibilidad> ObtenerDisponibilidadesPorDia(DayOfWeek dia)
+        {
+            return Disponibilidades.Where(d => d.DiaSemana == dia && d.EsActivo).ToList();
+        }
+        public List<Cita> ObtenerCitasPorDia(DateTime fecha)
+        {
+            var fechaInicio = fecha.Date;
+            var fechaFin = fechaInicio.AddDays(1);
+            return Citas.Where(c => c.FechaHora >= fechaInicio && c.FechaHora < fechaFin).ToList();
+        }
     }
 }
