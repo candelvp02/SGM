@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SGM.Domain.Entities.Medical;
+using SGM.Domain.Entities.Configuration;
 
 namespace SGM.Persistence.Repositories.Medical
 {
@@ -22,7 +24,7 @@ namespace SGM.Persistence.Repositories.Medical
             return await _context.Citas
                 .Include(c => c.Paciente)
                 .Include(c => c.Medico)
-                .Where(c => c.PacienteId == pacienteId && !c.IsDeleted)
+                .Where(c => c.PacienteId == pacienteId && !c.EstaEliminado)
                 .OrderByDescending(c => c.FechaHora)
                 .ToListAsync();
         }
@@ -32,7 +34,7 @@ namespace SGM.Persistence.Repositories.Medical
             return await _context.Citas
                 .Include(c => c.Paciente)
                 .Include(c => c.Medico)
-                .Where(c => c.MedicoId == medicoId && !c.IsDeleted)
+                .Where(c => c.MedicoId == medicoId && !c.EstaEliminado)
                 .OrderBy(c => c.FechaHora)
                 .ToListAsync();
         }
@@ -45,7 +47,7 @@ namespace SGM.Persistence.Repositories.Medical
             return await _context.Citas
                 .Include(c => c.Paciente)
                 .Include(c => c.Medico)
-                .Where(c => c.FechaHora >= fechaInicio && c.FechaHora < fechaFin && !c.IsDeleted)
+                .Where(c => c.FechaHora >= fechaInicio && c.FechaHora < fechaFin && !c.EstaEliminado)
                 .OrderBy(c => c.FechaHora)
                 .ToListAsync();
         }
@@ -55,7 +57,7 @@ namespace SGM.Persistence.Repositories.Medical
             return await _context.Citas
                 .Include(c => c.Paciente)
                 .Include(c => c.Medico)
-                .Where(c => c.Estado == estado && !c.IsDeleted)
+                .Where(c => c.Estado == estado && !c.EstaEliminado)
                 .OrderBy(c => c.FechaHora)
                 .ToListAsync();
         }
@@ -66,7 +68,7 @@ namespace SGM.Persistence.Repositories.Medical
                 .AnyAsync(c => c.MedicoId == medicoId &&
                           c.FechaHora == fechaHora &&
                           c.Estado != EstadoCita.Cancelada &&
-                          !c.IsDeleted);
+                          !c.EstaEliminado);
         }
 
         public async Task<IEnumerable<Cita>> GetCitasProximasAsync(DateTime fechaInicio, DateTime fechaFin)
@@ -77,7 +79,7 @@ namespace SGM.Persistence.Repositories.Medical
                 .Where(c => c.FechaHora >= fechaInicio &&
                            c.FechaHora <= fechaFin &&
                            c.Estado == EstadoCita.Programada &&
-                           !c.IsDeleted)
+                           !c.EstaEliminado)
                 .OrderBy(c => c.FechaHora)
                 .ToListAsync();
         }

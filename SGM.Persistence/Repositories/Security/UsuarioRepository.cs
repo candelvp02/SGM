@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SGM.Domain.Entities.Security;
+using SGM.Persistence.Interfaces.Security;
 
 namespace SGM.Persistence.Repositories.Security
 {
@@ -22,9 +24,9 @@ namespace SGM.Persistence.Repositories.Security
                 .AsNoTracking()
                 .Include(u => u.UsuarioRoles)
                     .ThenInclude(ur => ur.Rol)
-                .FirstOrDefaultAsync(u => u.NombreUsuario == nombreUsuario && !u.IsDeleted);
+                .FirstOrDefaultAsync(u => u.NombreUsuario == nombreUsuario && !u.EstaEliminado);
 
-            return user!; // Si quieres manejar "no encontrado", cambia la interfaz a Task<Usuario?>
+            return user!;
         }
 
         public async Task<Usuario> GetUsuarioByEmailAsync(string email)
@@ -33,21 +35,21 @@ namespace SGM.Persistence.Repositories.Security
                 .AsNoTracking()
                 .Include(u => u.UsuarioRoles)
                     .ThenInclude(ur => ur.Rol)
-                .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
+                .FirstOrDefaultAsync(u => u.Email == email && !u.EstaEliminado);
 
-            return user!; // Ídem comentario arriba
+            return user!;
         }
 
         public Task<bool> ExisteNombreUsuarioAsync(string nombreUsuario)
         {
             return _context.Usuarios
-                .AnyAsync(u => u.NombreUsuario == nombreUsuario && !u.IsDeleted);
+                .AnyAsync(u => u.NombreUsuario == nombreUsuario && !u.EstaEliminado);
         }
 
         public Task<bool> ExisteEmailAsync(string email)
         {
             return _context.Usuarios
-                .AnyAsync(u => u.Email == email && !u.IsDeleted);
+                .AnyAsync(u => u.Email == email && !u.EstaEliminado);
         }
 
         public async Task<IEnumerable<Usuario>> GetUsuariosActivosAsync()
@@ -56,7 +58,7 @@ namespace SGM.Persistence.Repositories.Security
                 .AsNoTracking()
                 .Include(u => u.UsuarioRoles)
                     .ThenInclude(ur => ur.Rol)
-                .Where(u => u.EsActivo && !u.IsDeleted)
+                .Where(u => u.EsActivo && !u.EstaEliminado)
                 .OrderBy(u => u.NombreUsuario)
                 .ToListAsync();
         }
@@ -67,7 +69,7 @@ namespace SGM.Persistence.Repositories.Security
                 .AsNoTracking()
                 .Include(u => u.UsuarioRoles)
                     .ThenInclude(ur => ur.Rol)
-                .Where(u => u.UsuarioRoles.Any(ur => ur.Rol.Nombre == nombreRol) && !u.IsDeleted)
+                .Where(u => u.UsuarioRoles.Any(ur => ur.Rol.Nombre == nombreRol) && !u.EstaEliminado)
                 .OrderBy(u => u.NombreUsuario)
                 .ToListAsync();
         }

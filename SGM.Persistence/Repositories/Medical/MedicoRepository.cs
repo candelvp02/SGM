@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SGM.Domain.Entities.Medical;
+using SGM.Persistence.Interfaces.Medical;
+using SGM.Domain.Entities.Configuration;
 
 namespace SGM.Persistence.Repositories.Medical
 {
@@ -20,7 +23,7 @@ namespace SGM.Persistence.Repositories.Medical
         {
             return await _context.Medicos
                 .Include(m => m.Disponibilidades)
-                .Where(m => m.Especialidad == especialidad && !m.IsDeleted)
+                .Where(m => m.Especialidad == especialidad && !m.EstaEliminado)
                 .OrderBy(m => m.Nombre)
                 .ToListAsync();
         }
@@ -30,7 +33,7 @@ namespace SGM.Persistence.Repositories.Medical
             return await _context.Medicos
                 .Include(m => m.Disponibilidades)
                 .Include(m => m.Citas)
-                .FirstOrDefaultAsync(m => m.NumeroLicencia == numeroLicencia && !m.IsDeleted);
+                .FirstOrDefaultAsync(m => m.NumeroLicencia == numeroLicencia && !m.EstaEliminado);
         }
 
         public async Task<Medico> GetMedicoByCedulaAsync(string cedula)
@@ -38,13 +41,13 @@ namespace SGM.Persistence.Repositories.Medical
             return await _context.Medicos
                 .Include(m => m.Disponibilidades)
                 .Include(m => m.Citas)
-                .FirstOrDefaultAsync(m => m.Cedula == cedula && !m.IsDeleted);
+                .FirstOrDefaultAsync(m => m.Cedula == cedula && !m.EstaEliminado);
         }
 
         public async Task<bool> ExisteLicenciaAsync(string numeroLicencia)
         {
             return await _context.Medicos
-                .AnyAsync(m => m.NumeroLicencia == numeroLicencia && !m.IsDeleted);
+                .AnyAsync(m => m.NumeroLicencia == numeroLicencia && !m.EstaEliminado);
         }
 
         public async Task<IEnumerable<Medico>> GetMedicosDisponiblesAsync(DateTime fecha)
@@ -58,7 +61,7 @@ namespace SGM.Persistence.Repositories.Medical
                                                        d.HoraInicio <= hora &&
                                                        d.HoraFin >= hora &&
                                                        d.EsActivo) &&
-                           !m.IsDeleted)
+                           !m.EstaEliminado)
                 .ToListAsync();
         }
     }

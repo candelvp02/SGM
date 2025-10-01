@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SGM.Domain.Entities.Medical;
+using SGM.Persistence.Interfaces.Medical;
 
 namespace SGM.Persistence.Repositories.Medical
 {
@@ -20,13 +22,13 @@ namespace SGM.Persistence.Repositories.Medical
         {
             return await _context.Pacientes
                 .Include(p => p.Citas)
-                .FirstOrDefaultAsync(p => p.Cedula == cedula && !p.IsDeleted);
+                .FirstOrDefaultAsync(p => p.Cedula == cedula && !p.EstaEliminado);
         }
 
         public async Task<IEnumerable<Paciente>> GetPacientesByNombreAsync(string nombre)
         {
             return await _context.Pacientes
-                .Where(p => (p.Nombre.Contains(nombre) || p.Apellido.Contains(nombre)) && !p.IsDeleted)
+                .Where(p => (p.Nombre.Contains(nombre) || p.Apellido.Contains(nombre)) && !p.EstaEliminado)
                 .OrderBy(p => p.Nombre)
                 .ThenBy(p => p.Apellido)
                 .ToListAsync();
@@ -35,14 +37,14 @@ namespace SGM.Persistence.Repositories.Medical
         public async Task<bool> ExisteCedulaAsync(string cedula)
         {
             return await _context.Pacientes
-                .AnyAsync(p => p.Cedula == cedula && !p.IsDeleted);
+                .AnyAsync(p => p.Cedula == cedula && !p.EstaEliminado);
         }
 
         public async Task<IEnumerable<Paciente>> GetPacientesActivosAsync()
         {
             return await _context.Pacientes
                 .Include(p => p.Citas)
-                .Where(p => !p.IsDeleted)
+                .Where(p => !p.EstaEliminado)
                 .OrderBy(p => p.Nombre)
                 .ThenBy(p => p.Apellido)
                 .ToListAsync();
